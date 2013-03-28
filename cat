@@ -1,0 +1,36 @@
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#include <string.h>
+
+int main (int argc, char** argv) {
+  FILE* f = fopen ("output.txt", "wb");
+	printf("%s\n", argv[1]);
+		if (!strcmp (argv[1],"cat")){
+			if (argc == 3){
+			  FILE * pFile;
+			  long lSize;
+			  char * buffer;
+			  size_t result;
+				pFile = fopen ( argv[2] , "rb" );
+				if (pFile==NULL) {
+					perror("stderr");
+					fprintf(f,"File error\n");
+					return -1;
+				}
+				fseek (pFile , 0 , SEEK_END);
+				lSize = ftell (pFile);
+				rewind (pFile);
+				buffer = (char*) malloc (sizeof(char)*lSize);
+				result = fread (buffer,1,lSize,pFile);
+				fclose (pFile);
+				fwrite (buffer , 1 , result , f );
+				free (buffer);
+				printf("all right");
+			}
+			else fprintf (f,"Your request must have 2 arguments comand and path");
+		}
+
+	return 0;
+}
