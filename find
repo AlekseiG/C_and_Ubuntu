@@ -1,0 +1,57 @@
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <dirent.h>
+#include <string.h>
+
+//FILE* f = fopen ("output.txt", "w");
+struct dirent *entry;
+
+
+void DirectoryDfs (char* path, char* rashirenie) {//так и не запустил
+  DIR *mydir = opendir(path);
+	printf ("why");
+	if(mydir != NULL) {
+		while (entry = readdir(mydir)){
+
+			 if (!strcmp(entry->d_name+strlen(entry->d_name)-strlen(rashirenie), rashirenie))  printf("%s\n", entry->d_name);
+			 char* newpath = strcat (path,"/");
+				printf ("%s\n", path);
+
+			 newpath = strcat (path,entry->d_name);
+			 DirectoryDfs (newpath, rashirenie);
+		}
+	close (mydir);
+	}
+}
+
+int main (int argc, char** argv) {
+
+	FILE* f = fopen ("output.txt", "w");
+	  	if (!strcmp (argv[1],"-find")){
+	  			if (argc == 3){
+	  			 DIR *mydir = opendir("/");
+	  			    if(mydir == NULL) {
+	  			        perror("opendir");
+	  			        fprintf(f,"fail\n");
+	  			        return -1;
+	  			    }
+
+	  			  DirectoryDfs ("/",argv[2]);
+
+	  			    closedir(mydir);
+	  			}
+	  			else if (argc == 4){
+	  				DIR *mydir = opendir(argv[3]);
+	  					if(mydir == NULL) {
+	  					       perror("opendir");
+	  					       return -1;
+	  					}
+	  					DirectoryDfs (argv[3], argv[2]);
+	  					closedir(mydir);
+	  			}
+	  			else printf("bol'she 4 parametrov");
+
+	  		} printf ("its pase for -FIND");
+	  	return 0;
+}
