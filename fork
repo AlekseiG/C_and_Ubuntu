@@ -1,0 +1,28 @@
+#include<stdlib.h>
+#include<unistd.h>
+#include<stdio.h>
+int main()
+{   	int pid;
+		int n =10;
+
+		 pid = fork();
+		 if (pid == 0){
+			 int sum = 0;
+			 for (int i = 0; i < n/2; i++) sum+=i;
+			 FILE* tmp = fopen("tmp.txt","r");
+			 int forksum;
+			 wait(1);
+			 fscanf (tmp,"%d", &forksum);
+			 fclose (tmp);
+			 sum += forksum;
+			 printf ("%d\n", sum);
+
+		 }
+		 else {
+			 int sum = 0;
+			 for (int i = n/2; i < n; i++) sum+=i;
+			 FILE* tmp = fopen("tmp.txt","w");
+			 fprintf (tmp, "%d", sum);
+			 fclose (tmp);
+		 }
+}
