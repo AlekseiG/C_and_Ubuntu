@@ -1,0 +1,75 @@
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <dirent.h>
+#include <string.h>
+#include <sys/stat.h>
+struct dirent *entry;
+
+
+void CopyDfs (char* path_from, char* path_to) {
+  DIR *mydir = opendir(path_from);
+	if(mydir == NULL)
+	   perror("opendir");
+
+	if (mydir != NULL) {
+		while (entry = readdir(mydir)) if (strcmp (entry->d_name , ".") && strcmp (entry->d_name , "..")){
+
+			char new_path_from [80] = "";
+			strcat (new_path_from, path_from);
+			strcat (new_path_from, "/");
+			strcat (new_path_from, entry->d_name);
+			char new_path_to [80] = "";
+			printf ("\n new_path_from  %s\n ", new_path_from);
+
+			strcat (new_path_to, path_to);
+			strcat (new_path_to, "/");
+			strcat (new_path_to, entry->d_name);
+			printf ("\n entry->d_name %s\n ", entry->d_name);
+
+			printf ("\nnew_path_to %s\n ", new_path_to);
+			FILE* discr_file_from;
+			printf ("\n type %d \n", entry->d_type);
+			if (!( discr_file_from = fopen (new_path_from, "rb"))) perror ("fopen");
+				else {
+					if (entry->d_type == 4) {
+						if (!mkdir(new_path_to, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH)) perror ("mkdir");
+						else {
+							printf ("\ni'm make dir \n ");
+							CopyDfs (new_path_from, new_path_to);
+						}
+					}
+					else {
+
+						fseek (discr_file_from , 0 , SEEK_END);
+						long lSize = ftell (discr_file_from);
+						rewind (discr_file_from);
+						char * buffer = (char*) malloc (sizeof(char)*lSize);
+						size_t result = fread (buffer,1,lSize, discr_file_from);
+						fclose (discr_file_from);;
+
+						FILE* discr_file_to = fopen (new_path_to, "wd");
+
+						fwrite (buffer , 1 , result , discr_file_to );
+						if ( fclose(discr_file_to)) perror ("fclose");
+						free (buffer);
+						printf ("\ni'm make file\n ");
+
+					}
+			 	}
+		}
+	closedir (mydir);
+	}
+}
+
+int main (int argc, char** argv) {
+
+	  	if (!strcmp (argv[1],"cp_dir")){
+	  	 if (argc == 4)
+	  					CopyDfs ( argv[2], argv[3]);
+
+	  			else printf("oshibka parametrov");
+
+	  		} else printf ("its comp for cp_dir");
+	  	return 0;
+}
